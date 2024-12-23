@@ -6,7 +6,7 @@ Copyright (c) 2005 by Yardi Systems
 
   NAME        
 
-                                rs_comm_Lease_Statement.SSRS.txt
+                                rs_comm_Lease_Statement_Test.SSRS.txt
 
  
 
@@ -116,7 +116,7 @@ param showreport=#Units#
 
 //Title
 
-Commercial Lease Statement
+Commercial Lease Statement Test New
 
 //end title
 
@@ -128,7 +128,7 @@ Commercial Lease Statement
 
 //end Version
 
- 
+
 
 //Select
 
