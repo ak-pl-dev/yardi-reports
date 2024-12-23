@@ -709,9 +709,11 @@ Select
 
                 ,Charges             Charges
 
-  /*              ,Payments          Payments
+                , 0 Payments
 
-           ,LsUnits       LsUnits */   
+  /*              ,Payments          Payments */
+
+           ,LsUnits       LsUnits 
 
 From
 
@@ -747,13 +749,15 @@ Select
 
                                 END)  Charges
 
+                , 0 Payments
+
          /*       ,sum(CASE tr.iType
 
                                 WHEN 6 THEN d.sAmount
 
                                 ELSE 0
 
-                                END)  Payments
+                                END)  Payments   */
 
                 ,isnull(CASE '#Units#'
 
@@ -776,7 +780,6 @@ Select
                                                 ELSE ''
 
                                                 END,'') LsUnits
-*/
 
 From     property p
 
@@ -912,10 +915,11 @@ Select
 
                 ,0 Charges
 
-               /* ,sum(-tr.stotalamount ) Payments
+                , 0 Payments
+
+               /* ,sum(-tr.stotalamount ) Payments  */
 
                 ,'' LsUnits
-*/
 
 From     property p
 
@@ -977,11 +981,11 @@ SELECT  p.hmy
 
                 ,  -tr.samountpaid charges
 
-            /*    , 0   payments
+            /*    , 0   payments   */
+            , 0 Payments
 
                 ,'' LsUnits
 
-*/
 
 From trans tr
 
@@ -1023,11 +1027,11 @@ Select
 
                 ,Charges             Charges
 
-    /*            ,Payments          Payments
+                , 0 Payments
+
+    /*            ,Payments          Payments   */
 
                 , LsUnits
-
-*/
 
 From
 
@@ -1062,17 +1066,16 @@ Select
                                 ELSE 0
 
                                 END)  Charges
-
+                , 0 Payments
              /*   ,sum(CASE tr.iType
 
                                 WHEN 6 THEN d.sAmount
 
                                 ELSE 0
 
-                                END)  Payments
+                                END)  Payments     */
 
                 ,'' LsUnits
-*/
 
 FROM
 
@@ -1138,6 +1141,14 @@ Select
 
                 ,Sum(Current_Owed) Current_Owed
 
+                ,' ' Due_0130
+
+                ,' ' Due_3160
+
+                ,' ' Due_6190
+
+                ,' ' Due_over90 
+
               /*  ,Sum(Due_0130) Due_0130
 
                 ,Sum(Due_3160) Due_3160
@@ -1165,6 +1176,16 @@ Select
                                 ELSE -d.sAmount
 
                                 END)     Current_Owed
+
+                ,' ' Due_0130
+
+                ,' ' Due_3160
+
+                ,' ' Due_6190
+
+                ,' ' Due_over90 
+
+
 
 /*                ,(CASE
 
