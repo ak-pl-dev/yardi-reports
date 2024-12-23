@@ -559,48 +559,55 @@ Order by 1,2,3,4,6,5
 
 //Select S2
 
-Select                                                                                                                   
-                phmy            phmy
-                ,thunit         thunit
-                ,thmyperson     thmyperson
-                ,Sum(Current_Owed) Current_Owed  -- Total charges without payments
-
-from
-(              
-
 Select
-                p.hmy            phmy
-                ,t.hunit         thunit
-                ,t.hmyperson     thmyperson
-                ,(CASE tr.iType
-                                WHEN 7 THEN tr.sTotalAmount
-                                ELSE -d.sAmount
-                                END)     Current_Owed
-
-From     property p
-                inner join tenant t on (p.hmy = t.hproperty)
-                inner join commtenstatus ts on ts.istatus=t.istatus
-                inner join trans tr on (t.hMyPerson = tr.hPerson)
-                inner join acct a on (tr.hOffsetAcct = a.hMy)
-                left outer join detail d on (d.hinvorrec = tr.hmy and tr.itype = 6)
-                left outer join trans trc on (d.hchkorchg = trc.hmy and trc.itype = 7 and trc.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#'))
-
-Where tr.iType IN (6, 7)
-        and isnull(t.bBillToCustomer,0) = 0                                         
-                and   t.hProperty > 0
-                and   tr.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#')
-
-                and isnull(tr.suserdefined2,' ') not in ( case '#Revers#' when 'No' then ':ReverseChg' else '!@#$%^&*()' end) 
-                and tr.voider in(case tr.itype when 6 then 0 when 7 then tr.voider end , case tr.itype when 6 then case '#Revers#' when 'No' then 0 else -1 end when 7 then       tr.voider end)
-                and (tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then -1 else 0 end)   or tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then 0 else 0 end)   )
-                #conditions#
-
+    phmy            phmy,
+    thunit          thunit,
+    thmyperson      thmyperson,
+    Sum(Current_Owed) Current_Owed
+from
+(
+    Select
+        p.hmy           phmy,
+        t.hunit         thunit,
+        t.hmyperson     thmyperson,
+        (CASE 
+            WHEN tr.iType = 7 THEN tr.sTotalAmount
+            ELSE d.sAmount
+        END) Current_Owed
+    From 
+        property p
+        inner join tenant t on (p.hmy = t.hproperty)
+        inner join commtenstatus ts on ts.istatus = t.istatus
+        inner join trans tr on (t.hMyPerson = tr.hPerson)
+        inner join acct a on (tr.hOffsetAcct = a.hMy)
+        left outer join detail d on (d.hinvorrec = tr.hmy and tr.itype = 6)
+        left outer join trans trc on (d.hchkorchg = trc.hmy and trc.itype = 7 
+            and trc.sDateOccurred <= dateadd(mm, 1, '#endmonth#') - day('#endmonth#'))
+ Where 
+        tr.iType IN (6, 7)
+        and isnull(t.bBillToCustomer, 0) = 0
+        and t.hProperty > 0
+        and tr.sDateOccurred <= dateadd(mm, 1, '#endmonth#') - day('#endmonth#')
+        and isnull(tr.suserdefined2, ' ') NOT IN 
+            (CASE '#Revers#' WHEN 'No' THEN ':ReverseChg' ELSE '!@#$%^&*()' END)
+        and tr.voider IN (
+            CASE tr.itype 
+                WHEN 6 THEN 0 
+                WHEN 7 THEN tr.voider 
+            END, 
+            CASE tr.itype 
+                WHEN 6 THEN CASE '#Revers#' WHEN 'No' THEN 0 ELSE -1 END 
+                WHEN 7 THEN tr.voider 
+            END
+        )
+        and tr.void NOT IN 
+            (CASE '#Revers#' WHEN 'No' THEN -1 ELSE 0 END)
+        #conditions#
 ) aaa
-
-Group by            
-                phmy
-                ,thunit
-                ,thmyperson
+Group by
+    phmy,
+    thunit,
+    thmyperson
 
 //End Select      
 
