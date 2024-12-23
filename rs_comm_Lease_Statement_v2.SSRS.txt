@@ -1378,6 +1378,7 @@ T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,     
 
  
 
+
 //Filter
 
 //Type, DataTyp,Name,                             Caption,  Key,                                              List ,                                          Val1, Val2, Mand, Multi, Title  Title
@@ -1396,7 +1397,7 @@ R,      M,      begmonth:endmonth,            Month Range,     ,                
 
 0,      A,      begdate,                        Age As Of,     ,                                                                                          ,                                                                              ,             ,    Y,      ,     Y,
 
-C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                                                                             ,             ,    Y,     Y,     Y,
+C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                                                                             ,             ,    Y,     N,     Y,
 
 L,      T,      Revers,                        Show Reversal?,     ,                                            No^Yes ,                                                                                               ,             ,    Y,      ,     Y,
 
