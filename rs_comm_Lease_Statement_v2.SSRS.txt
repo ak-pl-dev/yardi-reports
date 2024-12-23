@@ -129,12 +129,182 @@ Commercial Lease Statement Test New
 //end Version
 
 
-
 //Select
 
 declare @asofdt datetime
 
 set @asofdt = #begdate#
+
+select distinct p.hmy                                     phmy
+
+                ,p.scode                                  pscode
+
+                ,p.saddr1                                 propname
+
+           ,dbo.CommLeaseUnits(t.hmyperson,@asofdt)  tsunitcode
+
+                ,t.hmyperson                              thmyperson
+
+                ,t.scode                                  tscode
+
+                ,rtrim(ltrim(isnull(p.scode,''))) + '-' + rtrim(ltrim(isnull(t.scode,'')))                 tAccount
+
+                ,ltrim(case when (isnull(t.sfirstname,'') = '' or isnull(t.sfirstname,'') = ' ') then '' else t.sfirstname end 
+
+                                + case when (isnull(t.sfirstname,'') = '' or isnull(t.sfirstname,'') = ' ') then '' else ' ' end
+
+                                + case when (isnull(t.slastname,'') = '' or isnull(t.slastname,'') = ' ') then '' else t.slastname end) tname,
+
+                case when (ltrim(rtrim(co.fname)) = '' and ltrim(rtrim(co.lname)) = ltrim(rtrim(co.scompanyname))) then ltrim(rtrim(co.lname))
+
+                     when (ltrim(rtrim(co.scompanyname)) = '') then ltrim(rtrim(t.sLastName))
+
+                     else ltrim(rtrim(co.scompanyname)) end                                                                                concompanyname,
+
+                case when (ltrim(rtrim(co.lname)) <> ltrim(rtrim(co.scompanyname))) then co.ssalutation +' '+ltrim(rtrim(co.fname)) + ' ' + ltrim(rtrim(co.lname)) 
+
+                     when (ltrim(rtrim(co.fname)) <> '' and ltrim(rtrim(co.lname)) = ltrim(rtrim(co.scompanyname))) then co.ssalutation +' '+ltrim(rtrim(co.fname)) + ' ' + ltrim(rtrim(co.lname)) 
+
+                     else '' end                                                                                                                      conname,
+
+                isnull(co.addr1,' ')  custaddr1,
+
+                isnull(co.addr2,' ')  custaddr2,
+
+                isnull(co.addr3,' ')  custaddr3,
+
+                isnull(co.addr4,' ')  custaddr4, 
+
+                isnull(co.city,' ')   custcity,
+
+                isnull(co.state,' ')  custstate,
+
+                isnull(co.zip,' ')    custzip,
+
+                case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.scity,'') else isnull(t.scity,'') end
+
+                               + ', '
+
+                               + case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.sstate,'') else isnull(t.sstate,'') end
+
+                                + ' '
+
+                                + case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.szipcode,'') else isnull(t.szipcode,'') end      CityStZip            
+
+                ,psm.psname       vname
+
+                ,psm.psaddr1      vaddr1
+
+                ,psm.psaddr2      vaddr2
+
+                ,psm.psCiStZip    vCityStZip
+
+                from property p
+
+                inner join tenant t on (p.hmy = t.hproperty)
+
+                INNER JOIN CommTenant ct ON t.HMYPERSON = ct.hTenant
+
+                inner join commtenstatus ts on ts.istatus=t.istatus
+
+                left outer join (select ps.hmy pshmy
+
+                                                                ,ps.ucode psucode
+
+                                                                ,case when (isnull(ps.sfirstname,'') = '' or isnull(ps.sfirstname,'') = ' ') then '' else isnull(ps.sfirstname,'') end
+
+                                                                                + case when (isnull(ps.sfirstname,'') = '' or isnull(ps.sfirstname,'') = ' ') then '' else ' ' end
+
+                                                                                + case when (isnull(ps.ulastname,'') = '' or isnull(ps.ulastname,'') = ' ') then '' else isnull(ps.ulastname,'') end
+
+                                                                                psname
+
+                                                                ,isnull(ps.saddr1,'') psaddr1                                                                              
+
+                                                                ,isnull(ps.saddr2,'') psaddr2
+
+                                                                ,case when (isnull(ps.scity,'') = '' or isnull(ps.scity,'') = ' ') then '' else isnull(ps.scity,'') end
+
+                                                                + case when ((isnull(ps.scity,'') <> '' or isnull(ps.scity,'') <> ' ') and (isnull(ps.sstate,'') <> '' or isnull(ps.sstate,'') <> ' ')) then ', ' else '' end
+
+                                                                + case when (isnull(ps.sstate,'') = '' or isnull(ps.sstate,'') = ' ') then '' else isnull(ps.sstate,'') end
+
+                                                                + case when ((isnull(ps.szipcode,'') <> '' or isnull(ps.szipcode,'') <> ' ')) then ' ' else '' end
+
+                                                                + case when (isnull(ps.szipcode,'') = '' or isnull(ps.szipcode,'') = ' ') then '' else isnull(ps.szipcode,'') end psCiStZip
+
+                                                                from      person ps
+
+                                                                where ps.hmy = #vendor# ) psm on (1=1)
+
+                Left Outer join Customer Cu on t.hcustomer = cu.hmyperson
+
+                Left Outer join Contact_Details co         On co.hperson  =
+
+                                                                                                                                (case isnull(t.bBillToCustomer, 0)
+
+                                                                                                                                when 0    then t.hmyperson
+
+                                                                                                                                when -1 then T.hCustomer
+
+                                                                                                                end)
+
+                                                                                                And co.itype =
+
+                                                                                                                                (case isnull(t.bBillToCustomer ,0)
+
+                                                                                                                                when -1  then 478
+
+                                                                                                                                when 0 then 542
+
+                                                                                                                end)
+
+                                                                                                And co.bbilling=1
+
+                where  
+
+                                1 = 1     
+
+                                and isnull(t.bBillToCustomer,0) = 0
+
+                                and t.hmyperson in (select tr.hperson
+
+                                                                from      property p
+
+                                                                                inner join trans tr on (p.hmy = tr.hprop)
+
+                                                                                left outer join detail d on (tr.hmy = d.hinvorrec)
+
+                                                                where   tr.iType IN (6, 7)
+
+                                                                                and tr.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#')
+
+                                                                                /* and tr.void = case '#Revers#' when 'No' then 0 else tr.void end */
+
+                                                                                and tr.suserdefined2 not in ( case '#Revers#' when 'No' then ':ReverseChg' else '!@#$%^&*()' end) 
+
+                                                                                and tr.voider in(case tr.itype when 6 then 0 when 7 then tr.voider end , case tr.itype when 6 then case '#Revers#' when 'No' then 0 else -1 end when 7 then                tr.voider end)
+
+                                                                                #condition1#
+
+                                                                group by tr.hperson
+
+                                                                having convert(money,'#mindue#') <= case convert(money,'#mindue#')
+
+                                                                                when 0 then 0            
+
+                                                                                else sum(CASE tr.iType WHEN 7 THEN tr.sTotalAmount ELSE -d.sAmount END)
+
+                                                                                end )
+
+                #conditions#
+
+order by p.scode,t.scode
+
+//End Select
+
+ 
+//Select S1
 
 SELECT
     phmy,
