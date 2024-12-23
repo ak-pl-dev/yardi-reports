@@ -278,7 +278,8 @@ select distinct p.hmy                                     phmy
 
                                                                 where   tr.iType IN (6, 7)
 
-                                                                                and tr.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#')
+                                                                                and tr.sDateOccurred <= DATEADD(DAY, -DAY(DATEADD(MONTH, 1, '#endmonth#')), DATEADD(MONTH, 1, '#endmonth#'))
+										/*tr.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#')*/
 
                                                                                 /* and tr.void = case '#Revers#' when 'No' then 0 else tr.void end */
 
