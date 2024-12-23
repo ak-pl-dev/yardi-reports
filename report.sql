@@ -6,7 +6,7 @@ Copyright (c) 2005 by Yardi Systems
 
   NAME        
 
-                               rs_modified_comm_Lease_Statement.SSRS.txt
+                                rs_comm_Lease_Statement_Test.SSRS.txt
 
  
 
@@ -116,7 +116,7 @@ param showreport=#Units#
 
 //Title
 
-Modified Commercial Lease Statement
+Commercial Lease Statement Test New
 
 //end title
 
@@ -309,276 +309,561 @@ order by p.scode,t.scode
 //Select S1
 
 SELECT
+
                  phmy
+
                 ,thunit
+
                 ,thmyperson
+
                 ,Tran_Type
+
                 ,trhmy
+
                 , Tran_Date
+
                 , Description       
+
                 ,Sum(Charges - Paymants) Charges
+
+                ,0   Paymants
+
                 ,LsUnits
+
                                                 FROM (
+
                                                                 SELECT phmy
+
                                                                                 ,thunit
+
                                                                                 ,thmyperson
+
                                                                                 ,Tran_Type
+
                                                                                 ,trhmy
+
                                                                                 ,Tran_Date
+
                                                                                 ,Description
+
                                                                                 ,sum(Charges) Charges
+
                                                                                 ,sum(Paymants) Paymants
+
                                                                                 ,LsUnits
+
                                                                 FROM (
+
                                                                                 SELECT p.hmy phmy
+
                                                                                                 ,t.hunit thunit
+
                                                                                                 ,t.hmyperson thmyperson
+
                                                                                                 ,'1' Tran_Type
+
                                                                                                 ,NULL trhmy
+
                                                                                                 ,NULL Tran_Date
+
                                                                                                 ,'Balance Forward' Description
+
                                                                                                 ,sum(CASE tr.iType
+
                                                                                                                                 WHEN 7
+
                                                                                                                                                 THEN tr.sTotalAmount
+
                                                                                                                                 WHEN 3
+
                                                                                                                                                 THEN CASE
+
                                                                                                                                                                                 WHEN d.hchkorchg IS NULL
+
                                                                                                                                                                                                 THEN 0
+
                                                                                                                                                                                 ELSE - d.samount
+
                                                                                                                                                                                 END
+
                                                                                                                                 ELSE - d.sAmount
+
                                                                                                                                 END) Charges
+
                                                                                                 ,0 Paymants
+
                                                                                                 ,'' LsUnits
+
                                                                                 FROM property p
+
                                                                                 INNER JOIN tenant t ON (p.hmy = t.hproperty)
+
                                                                                 INNER JOIN commtenstatus ts ON ts.istatus = t.istatus
+
                                                                                 INNER JOIN trans tr ON (t.hMyPerson = tr.hPerson)
+
                                                                                 INNER JOIN acct a ON (tr.hOffsetAcct = a.hMy)
+
                                                                                 LEFT OUTER JOIN detail d ON (d.hinvorrec = tr.hmy)
+
                                                                                 WHERE tr.iType IN (
+
                                                                                                                 3
+
                                                                                                                 ,6
+
                                                                                                                 ,7
+
                                                                                                                 )
+
                                                                                                 AND isnull(t.bBillToCustomer, 0) = 0
+
                                                                                                 AND t.hProperty > 0
+
                                                                                                 AND tr.sDateOccurred < '#begmonth#'
+
                                                                                                 AND tr.void = CASE 'No'
+
                                                                                                                 WHEN 'No'
+
                                                                                                                                 THEN 0
+
                                                                                                                 ELSE tr.void
+
                                                                                                                 END
+
                                                                                                 AND 1=1 #Condition2#
+
                                                                                 GROUP BY p.hmy
+
                                                                                                 ,t.hunit
+
                                                                                                 ,t.hmyperson
+
                                                                                
+
                                                                                 UNION ALL
+
                                                                                
+
                                                                                 SELECT p.hmy phmy
+
                                                                                                 ,t.hunit thunit
+
                                                                                                 ,t.hmyperson thmyperson
+
                                                                                                 ,'1' Tran_Type
+
                                                                                                 ,NULL trhmy
+
                                                                                                 ,NULL Tran_Date
+
                                                                                                 ,'Balance Forward' Description
+
                                                                                                 ,0 Charges
+
                                                                                                 ,sum(- tr.stotalamount) Paymants
+
                                                                                                 ,'' LsUnits
+
                                                                                 FROM property p
+
                                                                                 INNER JOIN tenant t ON (p.hmy = t.hproperty)
+
                                                                                 INNER JOIN commtenstatus ts ON ts.istatus = t.istatus
+
                                                                                 INNER JOIN trans tr ON (
+
                                                                                                                 t.hMyPerson = tr.hAccrualAcct
+
                                                                                                                 AND tr.itype = 2
+
                                                                                                                 AND tr.hmy BETWEEN 200000000
+
                                                                                                                                 AND 299999999
+
                                                                                                                 )
+
                                                                                 LEFT OUTER JOIN detail d ON (
+
                                                                                                                 d.hinvorrec = tr.hmy
+
                                                                                                                 AND tr.itype = 6
+
                                                                                                                 )
+
                                                                                 WHERE tr.iType IN (2)
+
                                                                                                 AND isnull(t.bBillToCustomer, 0) = 0
+
                                                                                                 AND t.hProperty > 0
+
                                                                                                 AND tr.sDateOccurred < '#begmonth#'
+
                                                                                                 AND (
+
                                                                                                                 tr.void NOT IN (
+
                                                                                                                                 CASE 'No'
+
                                                                                                                                                 WHEN 'No'
+
                                                                                                                                                                 THEN - 1
+
                                                                                                                                                 WHEN 'Yes'
+
                                                                                                                                                                 THEN - 1
+
                                                                                                                                                 ELSE 0
+
                                                                                                                                                 END
+
                                                                                                                                 )
+
                                                                                                                 OR tr.void NOT IN (
+
                                                                                                                                 CASE 'No'
+
                                                                                                                                                 WHEN 'No'
+
                                                                                                                                                                 THEN - 1
+
                                                                                                                                                 WHEN 'Yes'
+
                                                                                                                                                                 THEN 0
+
                                                                                                                                                 ELSE 0
+
                                                                                                                                                 END
+
                                                                                                                                 )
+
                                                                                                                 )
+
                                                                                                 AND 1=1 #Condition2#
+
                                                                                 GROUP BY p.hmy
+
                                                                                                 ,t.hunit
+
                                                                                                 ,t.hmyperson
+
                                                                                 ) X
+
                                                                 GROUP BY phmy
+
                                                                                 ,thunit
+
                                                                                 ,thmyperson
+
                                                                                 ,Tran_Type
+
                                                                                 ,trhmy
+
                                                                                 ,Tran_Date
+
                                                                                 ,Description
+
                                                                                 ,LsUnits
+
                                                                
+
                                                                 UNION ALL
+
                                                                
+
                                                                 SELECT p.hmy phmy
+
                                                                                 ,t.hunit thunit
+
                                                                                 ,t.hmyperson thmyperson
+
                                                                                 ,'1' Tran_Type
+
                                                                                 ,NULL trhmy
+
                                                                                 ,NULL Tran_Date
+
                                                                                 ,'Balance Forward' Description
+
                                                                                 ,0 Charges
+
                                                                                 ,sum(CASE tr.iType
+
                                                                                                                 WHEN 6
+
                                                                                                                                 THEN d.sAmount
+
                                                                                                                 ELSE 0
+
                                                                                                                 END) Paymants
+
                                                                                 ,'' Lsunit
+
                                                                 FROM customer cu
+
                                                                 INNER JOIN trans tr ON cu.hmyperson = tr.hperson
+
                                                                                 AND tr.itype IN (
+
                                                                                                 6
+
                                                                                                 ,7
+
                                                                                                 )
+
                                                                                 AND tr.hmy BETWEEN 600000000
+
                                                                                                 AND 799999999
+
                                                                 LEFT OUTER JOIN detail d ON tr.hMy = d.hInvOrRec
+
                                                                 LEFT OUTER JOIN property p ON d.hProp = p.hMy
+
                                                                 LEFT OUTER JOIN trans trc ON (
+
                                                                                                 d.hChkOrChg = trc.hMy
+
                                                                                                 AND trc.iType = 2
+
                                                                                                 )
+
                                                                 LEFT OUTER JOIN tenant t ON t.hcustomer = cu.hmyperson
+
                                                                 INNER JOIN (
+
                                                                                 SELECT t.scode
+
                                                                                                 ,t.hmyperson
+
                                                                                                 ,t2.hmy
+
                                                                                 FROM tenant t
+
                                                                                 INNER JOIN property p ON p.hmy = t.hproperty
+
                                                                                 INNER JOIN trans t2 ON t2.hperson = t.hmyperson
+
                                                                                 INNER JOIN person per ON per.hmy = t2.hperson
+
                                                                                                 AND per.hmy = t.hmyperson
+
                                                                                 WHERE 1 = 1
+
                                                                                 AND 1=1 #Condition2#
+
                                                                                 ) lease ON lease.hmy = d.hchkorchg
+
                                                                 INNER JOIN Commtenstatus ts ON ts.istatus = t.istatus
+
                                                                 WHERE tr.itype IN (
+
                                                                                                 6
+
                                                                                                 ,7
+
                                                                                                 )
+
                                                                                 AND isnull(p.hlegalentity, 0) = 0
+
                                                                                 AND tr.sDateOccurred < '#begmonth#'                                                                         
+
                                                                                 AND 1=1 #Condition2#
+
                                                                 GROUP BY p.hmy
+
                                                                                 ,t.hunit
+
                                                                                 ,t.hmyperson
+
                                                                 ) y
+
                                                                 Group by            
+
 phmy,thunit,thmyperson,Tran_Type,trhmy,Tran_Date,Description,LsUnits
+
                
+
 Union All
+
  
+
 Select
+
                 phmy
+
                 ,thunit         thunit
+
                 ,thmyperson     thmyperson
+
                 ,Tran_Type          Tran_Type          
+
                 ,trhmy                   trhmy
+
                 ,Tran_Date          Tran_Date
+
                 ,case substring(Description,1,1) when '0' then (case substring(Description,1,3) when '0 -'  then  substring(Description,5,len(Description)) else Description end ) else Description end    Description
+
                 ,Charges             Charges
+
+                ,Payments          Payments
+
                 ,LsUnits       LsUnits
+
 From
+
 (              
+
 Select
+
                 p.hmy               phmy
+
                 ,t.hunit            thunit
+
                 ,t.hmyperson        thmyperson
+
                 ,'2'                Tran_Type
+
                 ,tr.hmy             trhmy
+
                 ,tr.sDateOccurred   Tran_Date
+
                 ,case when (isnull(tr.sUserDefined1,'') <> '' and tr.itype = 6 and Isnumeric(tr.sUserDefined1) = 1) then 'Chk# ' else '' end            
+
                                 +isnull(tr.sUserDefined1,'')
+
                                 + case when (isnull(tr.sUserDefined1,'') = '' or isnull(tr.sNotes,'') = '') then '' else ' - ' end
+
                                 + isnull(tr.sNotes,'') Description
+
                 ,sum(CASE tr.iType
+
                                 WHEN 7 THEN tr.sTotalAmount
+
                                 ELSE 0
+
                                 END)  Charges
+
+                ,sum(CASE tr.iType
+
+                                WHEN 6 THEN d.sAmount
+
+                                ELSE 0
+
+                                END)  Payments
+
                 ,isnull(CASE '#Units#'
+
                                                 WHEN 'Yes'
+
                                                                 THEN CASE tr.iType
+
                                                                                                 WHEN 7
+
                                                                                                                 THEN (
+
                                                                                                                                                 isnull(unit.Units,'')
+
                                                                                                                                                 )
+
                                                                                                 ELSE ''
+
                                                                                                 END
+
                                                 ELSE ''
+
                                                 END,'') LsUnits
+
 From     property p
+
                 inner join tenant t on (p.hmy = t.hproperty)
+
                 inner join commtenstatus ts on ts.istatus=t.istatus
+
                 inner join trans tr on (t.hMyPerson = tr.hPerson)
+
                 inner join acct a on (tr.hOffsetAcct = a.hMy)
+
                 left outer join detail d on (d.hinvorrec = tr.hmy and tr.itype = 6)
+
  
+
                 LEFT JOIN (
+
                 SELECT tr1.HMY
+
                                 ,STUFF((
+
                                                                 SELECT DISTINCT ',' + replace(CASE
+
                                                                                                                 WHEN isnull(cr.hUnit, 0) > 0
+
                                                                                                                                 THEN u1.SCODE
+
                                                                                                                 ELSE u.SCODE
+
                                                                                                                 END, ' ', '')
+
                                                                 FROM trans tr
+
                                                                 LEFT JOIN CAMCHARG ch ON tr.HMY = ch.HPOSTREF
+
                                                                 LEFT JOIN camrule cr ON ch.HCAMRULE = cr.HMY
+
                                                                 LEFT JOIN CommSchedule cs ON cr.hSchedule = cs.hmy
+
                                                                 LEFT JOIN unitxref ux ON cs.hAmendment = ux.hAmendment
+
                                                                                 AND isnull(ux.bActive, 0) = 0
+
                                                                 LEFT JOIN unit u ON ux.hUnit = u.hmy
+
                                                                 LEFT JOIN unit u1 ON cr.hUnit = u1.hmy
+
                                                                 WHERE tr.hmy = tr1.HMY
+
                                                                 FOR XML PATH('')
+
                                                                 ), 1, 1, '') AS Units
+
                 FROM trans tr1
+
                 ) Unit ON unit.HMY = tr.HMY
+
  
+
+ 
+
 Where tr.iType IN (6, 7)   
+
         and isnull(t.bBillToCustomer,0) = 0                                      
+
                 and   t.hProperty > 0
+
                 and   tr.sDateOccurred Between '#begmonth#' AND dateadd(mm,1,'#endmonth#')- day('#endmonth#')
+
                 /* and tr.void = case '#Revers#' when 'No' then 0 else tr.void end  */
+
                 and isnull(tr.suserdefined2,' ') not in ( case '#Revers#' when 'No' then ':ReverseChg' else '!@#$%^&*()' end) 
+
                 and tr.voider in(case tr.itype when 6 then 0 when 7 then tr.voider end , case tr.itype when 6 then case '#Revers#' when 'No' then 0 else -1 end when 7 then       tr.voider end)
+
                 and (tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then -1 else 0 end)   or tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then 0 else 0 end)   )
+
                 #conditions#
+
 Group by            
+
                 p.hmy
+
                 ,t.hunit
+
                 ,t.hmyperson
+
                 ,tr.hmy
+
                 ,tr.sDateOccurred
+
                 ,case when (isnull(tr.sUserDefined1,'') <> '' and tr.itype = 6 and Isnumeric(tr.sUserDefined1) = 1) then 'Chk# ' else '' end            
 
                                 +isnull(tr.sUserDefined1,'')
@@ -834,69 +1119,219 @@ Order by 1,2,3,4,6,5
 //Select S2
 
 Select                                                                                                                   /*Added to Remove Duplicate Records*/
+
                 phmy            phmy
+
                 ,thunit         thunit
+
                 ,thmyperson     thmyperson
+
                 ,Sum(Current_Owed) Current_Owed
+
+                ,Sum(Due_0130) Due_0130
+
+                ,Sum(Due_3160) Due_3160
+
+                ,Sum(Due_6190) Due_6190
+
+                ,Sum(Due_over90) Due_over90
+
 from
+
 (              
+
 Select
+
                 p.hmy            phmy
+
                 ,t.hunit         thunit
+
                 ,t.hmyperson     thmyperson
+
                 ,(CASE tr.iType
+
                                 WHEN 7 THEN tr.sTotalAmount
+
                                 ELSE -d.sAmount
+
                                 END)     Current_Owed
+
+                ,(CASE
+
+                                WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) <= 30 THEN
+
+                                                (CASE tr.iType
+
+                                                               WHEN 7 THEN tr.sTotalAmount
+
+                                                               ELSE -d.sAmount
+
+                                                                END)
+
+                                ELSE 0
+
+                                END)    Due_0130
+
+                ,(CASE
+
+                                WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) between 31 and 60 THEN
+
+                                                (CASE tr.iType
+
+                                                               WHEN 7 THEN tr.sTotalAmount
+
+                                                               ELSE -d.sAmount
+
+                                                                END)
+
+                                ELSE 0
+
+                                END)    Due_3160
+
+                ,(CASE
+
+                                WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) between 61 and 90 THEN
+
+                                                (CASE tr.iType
+
+                                                               WHEN 7 THEN tr.sTotalAmount
+
+                                                               ELSE -d.sAmount
+
+                                                                END)
+
+                                ELSE 0
+
+                                END)     Due_6190
+
+                ,(CASE
+
+                                WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) >= 91  THEN
+
+                                                (CASE tr.iType
+
+                                                               WHEN 7 THEN tr.sTotalAmount
+
+                                                               ELSE -d.sAmount
+
+                                                                END)
+
+                                ELSE
+
+                                                0
+
+                                END)     Due_over90
+
 From     property p
+
                 inner join tenant t on (p.hmy = t.hproperty)
+
                 inner join commtenstatus ts on ts.istatus=t.istatus
+
                 inner join trans tr on (t.hMyPerson = tr.hPerson)
+
                 inner join acct a on (tr.hOffsetAcct = a.hMy)
+
                 left outer join detail d on (d.hinvorrec = tr.hmy and tr.itype = 6)
+
                 left outer join trans trc on (d.hchkorchg = trc.hmy and trc.itype = 7 and trc.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#'))/*'#endmonth#')*/
+
 Where tr.iType IN (6, 7)
+
         and isnull(t.bBillToCustomer,0) = 0                                         
+
                 and   t.hProperty > 0
+
                 and   tr.sDateOccurred <= dateadd(mm,1,'#endmonth#')- day('#endmonth#')
+
                 /* and tr.void = case '#Revers#' when 'No' then 0 else tr.void end  */
+
                 and isnull(tr.suserdefined2,' ') not in ( case '#Revers#' when 'No' then ':ReverseChg' else '!@#$%^&*()' end) 
+
                 and tr.voider in(case tr.itype when 6 then 0 when 7 then tr.voider end , case tr.itype when 6 then case '#Revers#' when 'No' then 0 else -1 end when 7 then       tr.voider end)
+
                 and (tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then -1 else 0 end)   or tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then 0 else 0 end)   )
+
                 #conditions#
 
-/*TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER*REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS/
+ 
 
-FROM
-                customer cu inner join  trans tr on cu.hmyperson = tr.hperson and tr.itype in ( 6, 7)  
-                left outer join detail d on tr.hMy = d.hInvOrRec  
-                left outer join acct a on isnull(d.hAcct, tr.hoffsetacct) = a.hmy  
-                left outer join property p on  isnull(d.hProp, tr.hprop) = p.hMy  
-                LEFT OUTER JOIN trans trc ON ( d.hChkOrChg = trc.hMy and trc.iType = 2 )  
-                left outer join tenant t on t.hcustomer =cu.hmyperson
-                inner join(
-                                                Select
-                                                                t.scode,
-                                                                t.hmyperson ,
-                                                                t2.hmy                
-                                                from      tenant t                inner join property p on p.hmy=t.hproperty 
-                                                                inner join trans t2 on t2.hperson=t.hmyperson 
-                                                                inner join person per on per.hmy=t2.hperson and per.hmy=t.hmyperson                 
-                                                Where
-                                                                1 = 1
-                                ) lease on lease.hmy=d.hchkorchg
-                inner join commtenstatus ts on ts.istatus=t.istatus
-Where tr.itype in ( 6, 7)  
-                #conditions#
+/*TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER*REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS*/
+Union All
+Select
+	p.hmy            phmy
+	,t.hunit         thunit
+	,t.hmyperson     thmyperson
+	,(CASE tr.iType
+		WHEN 7 THEN tr.sTotalAmount
+		ELSE -d.sAmount 
+		END)     Current_Owed
+	,(CASE 
+		WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred) END,'#begdate#')),0) <= 30 THEN
+			(CASE tr.iType
+		 		WHEN 7 THEN tr.sTotalAmount
+		 		ELSE -d.sAmount 
+		 		END)
+    		ELSE 0 
+   		END)    Due_0130
+	,(CASE 
+		WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred) END,'#begdate#')),0) between 31 and 60 THEN
+			(CASE tr.iType
+		 		WHEN 7 THEN tr.sTotalAmount
+		 		ELSE -d.sAmount 
+		 		END)
+    		ELSE 0 
+   		END)    Due_3160
+	,(CASE 
+		WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred) END,'#begdate#')),0) between 61 and 90 THEN
+			(CASE tr.iType
+		 		WHEN 7 THEN tr.sTotalAmount
+		 		ELSE -d.sAmount 
+		 		END)
+    		ELSE 0 
+   		END)     Due_6190
+	,(CASE 
+		WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred) END,'#begdate#')),0) >= 91  THEN
+			(CASE tr.iType
+		 		WHEN 7 THEN tr.sTotalAmount
+		 		ELSE -d.sAmount 
+		 		END)
+    		ELSE 
+			0
+   		END)     Due_over90
+FROM 
+	customer cu inner join  trans tr on cu.hmyperson = tr.hperson and tr.itype in ( 6, 7)   
+	left outer join detail d on tr.hMy = d.hInvOrRec   
+	left outer join acct a on isnull(d.hAcct, tr.hoffsetacct) = a.hmy   
+	left outer join property p on  isnull(d.hProp, tr.hprop) = p.hMy   
+	LEFT OUTER JOIN trans trc ON ( d.hChkOrChg = trc.hMy and trc.iType = 2 )   
+	left outer join tenant t on t.hcustomer =cu.hmyperson 
+	inner join(
+			Select 
+				t.scode,
+				t.hmyperson ,
+				t2.hmy  	
+			from 	tenant t	inner join property p on p.hmy=t.hproperty  
+				inner join trans t2 on t2.hperson=t.hmyperson  
+				inner join person per on per.hmy=t2.hperson and per.hmy=t.hmyperson  	
+			Where 
+				1 = 1
+		) lease on lease.hmy=d.hchkorchg
+	inner join commtenstatus ts on ts.istatus=t.istatus
+Where tr.itype in ( 6, 7)   
+	#conditions#
 )aaa
 
-Group by            
-                phmy
-                ,thunit
-                ,thmyperson
+Group by	
+	phmy
+	,thunit
+	,thmyperson
 
 //End Select      
 
+ 
+
+ 
 
 //Columns
 
@@ -942,7 +1377,13 @@ T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,     
 
 T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,        ,      500,
 
+T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,        ,      500,
+
+T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,        ,      500,
+
 //End columns
+
+ 
 
 //Filter
 
@@ -962,7 +1403,7 @@ R,      M,      begmonth:endmonth,            Month Range,     ,                
 
 0,      A,      begdate,                        Age As Of,     ,                                                                                          ,                                                                              ,             ,    Y,      ,     Y,
 
-C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                         t.vendor = #vendor#,             ,    Y,     N,     Y,
+C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                                                                             ,             ,    Y,     N,     N,
 
 L,      T,      Revers,                        Show Reversal?,     ,                                            No^Yes ,                                                                                               ,             ,    Y,      ,     Y,
 
