@@ -6,7 +6,7 @@ Copyright (c) 2005 by Yardi Systems
 
   NAME        
 
-                                rs_comm_Lease_Statement_Test.SSRS.txt
+                                rs_comm_Lease_Statement.SSRS.txt
 
  
 
@@ -116,7 +116,7 @@ param showreport=#Units#
 
 //Title
 
-Commercial Lease Statement Test New
+Commercial Lease Statement
 
 //end title
 
@@ -127,7 +127,6 @@ Commercial Lease Statement Test New
 1.0.002 Date:09.12.2009
 
 //end Version
-
 
 
 //Select
@@ -1127,7 +1126,9 @@ Order by 1,2,3,4,6,5
 
 //Select S2
 
-Select                                                                                                                   /*Added to Remove Duplicate Records*/
+/*Added to Remove Duplicate Records*/
+
+Select
 
                 phmy            phmy
 
@@ -1137,13 +1138,13 @@ Select                                                                          
 
                 ,Sum(Current_Owed) Current_Owed
 
-                ,Sum(Due_0130) Due_0130
+              /*  ,Sum(Due_0130) Due_0130
 
                 ,Sum(Due_3160) Due_3160
 
                 ,Sum(Due_6190) Due_6190
 
-                ,Sum(Due_over90) Due_over90
+                ,Sum(Due_over90) Due_over90 */
 
 from
 
@@ -1165,7 +1166,7 @@ Select
 
                                 END)     Current_Owed
 
-                ,(CASE
+/*                ,(CASE
 
                                 WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) <= 30 THEN
 
@@ -1229,7 +1230,7 @@ Select
 
                                                 0
 
-                                END)     Due_over90
+                                END)     Due_over90   */
 
 From     property p
 
