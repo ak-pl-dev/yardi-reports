@@ -1169,7 +1169,7 @@ Select
 
                                 END)     Current_Owed
 
-                ,(CASE
+               /* ,(CASE
 
                                 WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) <= 30 THEN
 
@@ -1233,7 +1233,7 @@ Select
 
                                                 0
 
-                                END)     Due_over90
+                                END)     Due_over90 */
 
 From     property p
 
