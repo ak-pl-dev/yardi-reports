@@ -1263,10 +1263,10 @@ Where tr.iType IN (6, 7)
                 and (tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then -1 else 0 end)   or tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then 0 else 0 end)   )
 
                 #conditions#
-
+) aaa
  
 
-/***TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS***/
+/* TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS/
 
  
 
@@ -1314,7 +1314,7 @@ Where tr.itype in ( 6, 7)
 
 )aaa
 
- 
+ */
 
 Group by            
 
