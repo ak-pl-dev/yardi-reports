@@ -128,7 +128,6 @@ Commercial Lease Statement
 
 //end Version
 
- 
 
 //Select
 
@@ -136,69 +135,49 @@ declare @asofdt datetime
 
 set @asofdt = #begdate#
 
-select distinct p.hmy                                     phmy
+select 0                                     phmy
 
-                ,p.scode                                  pscode
+                ,0                                  pscode
 
-                ,p.saddr1                                 propname
+                ,0                                 propname
 
            ,dbo.CommLeaseUnits(t.hmyperson,@asofdt)  tsunitcode
 
-                ,t.hmyperson                              thmyperson
+                ,0                              thmyperson
 
-                ,t.scode                                  tscode
+                ,0                                  tscode
 
-                ,rtrim(ltrim(isnull(p.scode,''))) + '-' + rtrim(ltrim(isnull(t.scode,'')))                 tAccount
+                ,0                 tAccount
 
-                ,ltrim(case when (isnull(t.sfirstname,'') = '' or isnull(t.sfirstname,'') = ' ') then '' else t.sfirstname end 
+                ,0 tname
+                
+                ,0 concompanyname
 
-                                + case when (isnull(t.sfirstname,'') = '' or isnull(t.sfirstname,'') = ' ') then '' else ' ' end
+                ,0 conname,
 
-                                + case when (isnull(t.slastname,'') = '' or isnull(t.slastname,'') = ' ') then '' else t.slastname end) tname,
+                0  custaddr1,
 
-                case when (ltrim(rtrim(co.fname)) = '' and ltrim(rtrim(co.lname)) = ltrim(rtrim(co.scompanyname))) then ltrim(rtrim(co.lname))
+                0  custaddr2,
 
-                     when (ltrim(rtrim(co.scompanyname)) = '') then ltrim(rtrim(t.sLastName))
+                0  custaddr3,
 
-                     else ltrim(rtrim(co.scompanyname)) end                                                                                concompanyname,
+                0  custaddr4, 
 
-                case when (ltrim(rtrim(co.lname)) <> ltrim(rtrim(co.scompanyname))) then co.ssalutation +' '+ltrim(rtrim(co.fname)) + ' ' + ltrim(rtrim(co.lname)) 
+                0  custcity,
 
-                     when (ltrim(rtrim(co.fname)) <> '' and ltrim(rtrim(co.lname)) = ltrim(rtrim(co.scompanyname))) then co.ssalutation +' '+ltrim(rtrim(co.fname)) + ' ' + ltrim(rtrim(co.lname)) 
+                0  custstate,
 
-                     else '' end                                                                                                                      conname,
+                0  custzip,
 
-                isnull(co.addr1,' ')  custaddr1,
+                0  CityStZip            
 
-                isnull(co.addr2,' ')  custaddr2,
+                ,0       vname
 
-                isnull(co.addr3,' ')  custaddr3,
+                ,0      vaddr1
 
-                isnull(co.addr4,' ')  custaddr4, 
+                ,0      vaddr2
 
-                isnull(co.city,' ')   custcity,
-
-                isnull(co.state,' ')  custstate,
-
-                isnull(co.zip,' ')    custzip,
-
-                case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.scity,'') else isnull(t.scity,'') end
-
-                               + ', '
-
-                               + case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.sstate,'') else isnull(t.sstate,'') end
-
-                                + ' '
-
-                                + case when (isnull(t.saddr1,'') = '' or isnull(t.saddr1,'') = ' ') then isnull(p.szipcode,'') else isnull(t.szipcode,'') end      CityStZip            
-
-                ,psm.psname       vname
-
-                ,psm.psaddr1      vaddr1
-
-                ,psm.psaddr2      vaddr2
-
-                ,psm.psCiStZip    vCityStZip
+                ,0    vCityStZip
 
                 from property p
 
@@ -310,25 +289,25 @@ order by p.scode,t.scode
 
 SELECT
 
-                 phmy
+                 0 phmy
 
-                ,thunit
+                ,0 thunit
 
-                ,thmyperson
+                ,0 thmyperson
 
-                ,Tran_Type
+                ,0 Tran_Type
 
-                ,trhmy
+                ,0 trhmy
 
-                , Tran_Date
+                ,Tran_Date
 
-                , Description       
+                ,'0' Description       
 
-                ,Sum(Charges - Paymants) Charges
+                ,0 Sum(Charges - Paymants) Charges
 
                 ,0   Paymants
 
-                ,LsUnits
+                ,0 LsUnits
 
                                                 FROM (
 
@@ -690,25 +669,25 @@ Union All
 
 Select
 
-                phmy
+                0 phmy
 
-                ,thunit         thunit
+                ,0         thunit
 
-                ,thmyperson     thmyperson
+                ,0     thmyperson
 
-                ,Tran_Type          Tran_Type          
+                ,0          Tran_Type          
 
-                ,trhmy                   trhmy
+                ,0                   trhmy
 
-                ,Tran_Date          Tran_Date
+                ,tr.sDateOccurred          Tran_Date
 
-                ,case substring(Description,1,1) when '0' then (case substring(Description,1,3) when '0 -'  then  substring(Description,5,len(Description)) else Description end ) else Description end    Description
+                ,'0' Description
 
-                ,Charges             Charges
+                ,0             Charges
 
-                ,Payments          Payments
+                ,0          Payments
 
-                ,LsUnits       LsUnits
+                ,0       LsUnits
 
 From
 
@@ -889,28 +868,26 @@ Union All
 /*To get the check Payables only*/
 
 Select
+	
+                0               phmy
 
-                p.hmy               phmy
+                ,0            thunit
 
-                ,t.hunit            thunit
+                ,0        thmyperson
 
-                ,t.hmyperson        thmyperson
+                ,0                Tran_Type
 
-                ,'2'                Tran_Type
+                ,0             trhmy
 
-                ,tr.hmy             trhmy
+                ,Tran_Date   Tran_Date
 
-                ,tr.sDateOccurred   Tran_Date
-
-                ,'Chk# ' + rtrim(ltrim(tr.uRef)) + ' paid out' +
-
-                case when tr.hAccrualAcct <> t.hmyperson then rtrim(t.sCode) else '' end Description
+                ,'0' Description
 
                 ,0 Charges
 
-                ,sum(-tr.stotalamount ) Payments
+                ,0 Payments
 
-                ,'' LsUnits
+                ,0 LsUnits
 
 From     property p
 
@@ -956,25 +933,25 @@ Group by
 
 Union all
 
-SELECT  p.hmy
+SELECT  0 p.hmy
 
-                ,t.hunit            thunit
+                ,0            thunit
 
-                ,t.hmyperson        thmyperson
+                ,0        thmyperson
 
-                ,'2'                Tran_Type
+                ,0                Tran_Type
 
-                ,tr.hmy             trhmy
+                ,0             trhmy
 
-                ,tr.sDateOccurred   Tran_Date
+                ,Tran_Date   Tran_Date
 
-                ,rtrim(tr.sNotes)  + ' Payable# '  +convert(varchar,tr.hmy-300000000 )  Description
+                ,'0' Description
 
-                ,  -tr.samountpaid charges
+                , 0 charges
 
                 , 0   payments
 
-                ,'' LsUnits
+                ,0 LsUnits
 
 From trans tr
 
@@ -1002,23 +979,23 @@ Select
 
                 phmy
 
-                ,thunit         thunit
+                ,0         thunit
 
-                ,thmyperson     thmyperson
+                ,0     thmyperson
 
-                ,Tran_Type          Tran_Type          
+                ,0          Tran_Type          
 
-                ,trhmy                   trhmy
+                ,0                   trhmy
 
-                ,Tran_Date          Tran_Date
+                ,tr.sDateOccurred          Tran_Date
 
-                ,case substring(Description,1,1) when '0' then (case substring(Description,1,3) when '0 -'  then  substring(Description,5,len(Description)) else Description end ) else Description end    Description
+                ,'0' Description
 
-                ,Charges             Charges
+                ,0             Charges
 
-                ,Payments          Payments
+                ,0          Payments
 
-                , LsUnits
+                , 0 LsUnits
 
 From
 
@@ -1120,21 +1097,21 @@ Order by 1,2,3,4,6,5
 
 Select                                                                                                                   /*Added to Remove Duplicate Records*/
 
-                phmy            phmy
+                0            phmy
 
-                ,thunit         thunit
+                ,0         thunit
 
-                ,thmyperson     thmyperson
+                ,0     thmyperson
 
-                ,Sum(Current_Owed) Current_Owed
+                ,0 Current_Owed
 
-                ,Sum(Due_0130) Due_0130
+                ,0 Due_0130
 
-                ,Sum(Due_3160) Due_3160
+                ,0 Due_3160
 
-                ,Sum(Due_6190) Due_6190
+                ,0 Due_6190
 
-                ,Sum(Due_over90) Due_over90
+                ,0 Due_over90
 
 from
 
