@@ -128,6 +128,7 @@ Commercial Lease Statement
 
 //end Version
 
+ 
 
 //Select
 
@@ -307,9 +308,6 @@ order by p.scode,t.scode
 
 //Select S1
 
-
-/*
--- Removed this query as it is fetched data of previous ( first row in report )
 SELECT
 
                  phmy
@@ -688,8 +686,7 @@ phmy,thunit,thmyperson,Tran_Type,trhmy,Tran_Date,Description,LsUnits
 
 Union All
 
-
-*/
+ 
 
 Select
 
@@ -709,11 +706,9 @@ Select
 
                 ,Charges             Charges
 
-                , 0 Payments
+                ,Payments          Payments
 
-  /*              ,Payments          Payments */
-
-           ,LsUnits       LsUnits 
+                ,LsUnits       LsUnits
 
 From
 
@@ -749,15 +744,13 @@ Select
 
                                 END)  Charges
 
-                , 0 Payments
-
-         /*       ,sum(CASE tr.iType
+                ,sum(CASE tr.iType
 
                                 WHEN 6 THEN d.sAmount
 
                                 ELSE 0
 
-                                END)  Payments   */
+                                END)  Payments
 
                 ,isnull(CASE '#Units#'
 
@@ -915,9 +908,7 @@ Select
 
                 ,0 Charges
 
-                , 0 Payments
-
-               /* ,sum(-tr.stotalamount ) Payments  */
+                ,sum(-tr.stotalamount ) Payments
 
                 ,'' LsUnits
 
@@ -981,11 +972,9 @@ SELECT  p.hmy
 
                 ,  -tr.samountpaid charges
 
-            /*    , 0   payments   */
-            , 0 Payments
+                , 0   payments
 
                 ,'' LsUnits
-
 
 From trans tr
 
@@ -1027,9 +1016,7 @@ Select
 
                 ,Charges             Charges
 
-                , 0 Payments
-
-    /*            ,Payments          Payments   */
+                ,Payments          Payments
 
                 , LsUnits
 
@@ -1066,14 +1053,14 @@ Select
                                 ELSE 0
 
                                 END)  Charges
-                , 0 Payments
-             /*   ,sum(CASE tr.iType
+
+                ,sum(CASE tr.iType
 
                                 WHEN 6 THEN d.sAmount
 
                                 ELSE 0
 
-                                END)  Payments     */
+                                END)  Payments
 
                 ,'' LsUnits
 
@@ -1125,13 +1112,13 @@ Group by tr.SUSERDEFINED1, tr.ITYPE,tr.SUSERDEFINED1,tr.SNOTES, p.hmy ,t.hunit ,
 
 Order by 1,2,3,4,6,5
 
-//End Select 
+//End Select
+
+               
 
 //Select S2
 
-/*Added to Remove Duplicate Records*/
-
-Select
+Select                                                                                                                   /*Added to Remove Duplicate Records*/
 
                 phmy            phmy
 
@@ -1141,21 +1128,13 @@ Select
 
                 ,Sum(Current_Owed) Current_Owed
 
-                ,' ' Due_0130
-
-                ,' ' Due_3160
-
-                ,' ' Due_6190
-
-                ,' ' Due_over90 
-
-              /*  ,Sum(Due_0130) Due_0130
+                ,Sum(Due_0130) Due_0130
 
                 ,Sum(Due_3160) Due_3160
 
                 ,Sum(Due_6190) Due_6190
 
-                ,Sum(Due_over90) Due_over90 */
+                ,Sum(Due_over90) Due_over90
 
 from
 
@@ -1177,17 +1156,7 @@ Select
 
                                 END)     Current_Owed
 
-                ,' ' Due_0130
-
-                ,' ' Due_3160
-
-                ,' ' Due_6190
-
-                ,' ' Due_over90 
-
-
-
-/*                ,(CASE
+                ,(CASE
 
                                 WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) <= 30 THEN
 
@@ -1251,7 +1220,7 @@ Select
 
                                                 0
 
-                                END)     Due_over90   */
+                                END)     Due_over90
 
 From     property p
 
@@ -1284,6 +1253,8 @@ Where tr.iType IN (6, 7)
                 and (tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then -1 else 0 end)   or tr.void not in(case '#Revers#' when 'No' then -1  when 'Yes' then 0 else 0 end)   )
 
                 #conditions#
+
+ 
 ) aaa
  
 
@@ -1345,8 +1316,10 @@ Group by
 
                 ,thmyperson
 
-//End Select 
+//End Select  
+
  
+
 //Columns
 
 //Type  Name    Head1   Head2   Head3           Head4                   Show    Color   Formula Drill  Key   Width    Total
@@ -1399,7 +1372,6 @@ T,      ,       ,      ,       ,      ,           Y,      ,       ,       ,     
 
  
 
-
 //Filter
 
 //Type, DataTyp,Name,                             Caption,  Key,                                              List ,                                          Val1, Val2, Mand, Multi, Title  Title
@@ -1418,7 +1390,7 @@ R,      M,      begmonth:endmonth,            Month Range,     ,                
 
 0,      A,      begdate,                        Age As Of,     ,                                                                                          ,                                                                              ,             ,    Y,      ,     Y,
 
-C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                                                                             ,             ,    Y,     N,     Y,
+C,      T,      vendor,                    Company Vendor,     ,                                                 5 ,                                                                             ,             ,    Y,     N,     N,
 
 L,      T,      Revers,                        Show Reversal?,     ,                                            No^Yes ,                                                                                               ,             ,    Y,      ,     Y,
 
