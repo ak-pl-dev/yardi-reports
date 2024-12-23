@@ -1123,9 +1123,7 @@ Group by tr.SUSERDEFINED1, tr.ITYPE,tr.SUSERDEFINED1,tr.SNOTES, p.hmy ,t.hunit ,
 
 Order by 1,2,3,4,6,5
 
-//End Select
-
-               
+//End Select 
 
 //Select S2
 
@@ -1139,15 +1137,13 @@ Select                                                                          
 
                 ,Sum(Current_Owed) Current_Owed
 
-              /*  ,Sum(Due_0130) Due_0130
+                ,Sum(Due_0130) Due_0130
 
                 ,Sum(Due_3160) Due_3160
 
                 ,Sum(Due_6190) Due_6190
 
-
                 ,Sum(Due_over90) Due_over90
-*/
 
 from
 
@@ -1169,7 +1165,7 @@ Select
 
                                 END)     Current_Owed
 
-               /* ,(CASE
+                ,(CASE
 
                                 WHEN isnull(floor(datediff(day, CASE tr.itype WHEN 7 THEN tr.sDateOccurred ELSE isnull(trc.sDateOccurred,tr.sDateOccurred)  END,'#begdate#')),0) <= 30 THEN
 
@@ -1233,7 +1229,7 @@ Select
 
                                                 0
 
-                                END)     Due_over90 */
+                                END)     Due_over90
 
 From     property p
 
@@ -1269,7 +1265,7 @@ Where tr.iType IN (6, 7)
 
  
 
-	/*TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER*REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS */
+/*TO GET THE RECORDS FOR WHICH CHARGE IS APPLIED TO TENANT AND PAYMENT IS MADE BY CUSTOMER*REMOVED TO SHOW ONLY OPEN ITEMS AND NOT PAYMENTS/
 
  
 
@@ -1327,12 +1323,8 @@ Group by
 
                 ,thmyperson
 
-//End Select      
-
+//End Select 
  
-
- 
-
 //Columns
 
 //Type  Name    Head1   Head2   Head3           Head4                   Show    Color   Formula Drill  Key   Width    Total
